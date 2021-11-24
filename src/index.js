@@ -1,18 +1,24 @@
 import { config as dotenvConfig } from "dotenv";
+dotenvConfig();
+
 import fetch from "./fetch.js";
 
 import authenticate from "./authenticate.js";
 import { getNextOccurence } from "./getNextOccurence.js";
+import makeSendTelegramNotifications from "./makeSendTelegramNotifications.js";
 
-dotenvConfig();
+const telegramApiKey = process.env.TELEGRAM_API_KEY;
+const telegramChatId = process.env.TELEGRAM_CHAT_ID;
+
+const sendTelegramNotification = makeSendTelegramNotifications({
+  apiKey: telegramApiKey,
+  chatId: telegramChatId,
+});
 
 await authenticate({
   username: process.env.USERNAME,
   password: process.env.PASSWORD,
 });
-
-// const currentBookings = getCurrentBookings();
-// const quota = getQuota();
 
 const ROOMS = {
   K02: {
@@ -87,5 +93,19 @@ const attemptBooking = async (booking) => {
   return result.json();
 };
 
-const promises = wantedBookings.map((booking) => attemptBooking(booking));
-console.log(await Promise.all(promises));
+await sendTelegramNotification("Attempting new booking......");
+const promises = wantedBookings.map(async (booking) => {
+  const result = await attemptBooking(booking);
+  const nextOccurence = getNextOccurence({ weekDay: booking.weekDay });
+
+  const successful = result[0].class === "message-success";
+  const title = `*${booking.roomName}* on *${booking.weekDay}* (${nextOccurence})`;
+  const successMessage = `- ✅ I booked ${title} for you.`;
+  const errorMessage = `- ❌ I failed to book ${title} for you. Asimut shows the following errors: \`${result
+    .map((r) => r.text)
+    .join(". ")}\``;
+
+  await sendTelegramNotification(successful ? successMessage : errorMessage);
+});
+await Promise.all(promises);
+await sendTelegramNotification("Done.");
