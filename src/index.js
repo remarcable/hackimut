@@ -101,9 +101,9 @@ const promises = wantedBookings.map(async (booking) => {
   const successful = result[0].class === "message-success";
   const title = `*${booking.roomName}* on *${booking.weekDay}* (${nextOccurence})`;
   const successMessage = `- ✅ I booked ${title} for you.`;
-  const errorMessage = `- ❌ I failed to book ${title} for you. Asimut shows the following errors: \`${result
+  const errorMessage = `- ❌ I failed to book ${title} for you. Asimut shows the following errors: _${result
     .map((r) => r.text)
-    .join(". ")}\``;
+    .join(". ")}_`;
 
   await sendTelegramNotification(successful ? successMessage : errorMessage);
 });
