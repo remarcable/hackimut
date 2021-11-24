@@ -20,16 +20,17 @@ const ROOMS = {
     location: "Lie-R02 (Überaum)",
     category: 51,
   },
-  R207: {
-    "location-id": 58,
-    location: "Lie-R207 (Klavier - LA/KPA)",
+  206: {
+    "location-id": 57,
+    location: "Lie-R206",
     category: 51,
   },
 };
+
 const wantedBookings = [
   {
     roomName: "K02",
-    weekDay: "Sunday",
+    weekDay: "Monday",
     starttime: "14:10",
     endtime: "16:00",
   },
@@ -40,7 +41,7 @@ const wantedBookings = [
     endtime: "10:50",
   },
   {
-    roomName: "207",
+    roomName: "206",
     weekDay: "Thursday",
     starttime: "13:10",
     endtime: "14:10",
@@ -72,13 +73,19 @@ const attemptBooking = async (booking) => {
     endtime: booking.endtime,
   };
 
-  return fetch("https://udk-berlin.asimut.net/public/async-event.php", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: new URLSearchParams(event),
-  });
+  const result = await fetch(
+    "https://udk-berlin.asimut.net/public/async-event.php",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: new URLSearchParams(event),
+    }
+  );
+
+  return result.json();
 };
 
-console.log(await (await attemptBooking(wantedBookings[0])).text());
+const promises = wantedBookings.map((booking) => attemptBooking(booking));
+console.log(await Promise.all(promises));
