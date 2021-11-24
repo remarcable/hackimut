@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "node -r dotenv/config src/index.js",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --watch"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
+    "lint": "eslint src"
   },
   "dependencies": {
     "dotenv": "^10.0.0",
