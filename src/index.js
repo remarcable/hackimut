@@ -105,3 +105,5 @@ const promises = wantedBookings.map(async (booking) => {
 
 await Promise.all(promises);
 await sendTelegramNotification("Done.");
+
+console.log(`[${new Date().toLocaleString()}] Script ran successfully`);
