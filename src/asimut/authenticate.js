@@ -1,4 +1,4 @@
-import fetch from "./fetch.js";
+import fetch from "../fetch.js";
 
 // sets session cookies needed for authentication
 export default async function authenticate({ username, password }) {
