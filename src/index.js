@@ -1,6 +1,3 @@
-import { config as dotenvConfig } from "dotenv";
-dotenvConfig();
-
 import fetch from "./fetch.js";
 
 import authenticate from "./authenticate.js";
