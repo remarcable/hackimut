@@ -1,5 +1,6 @@
 import fetch from "../fetch.js";
 
+const BASE_URL = process.env.ASIMUT_BASE_URL;
 // sets session cookies needed for authentication
 export default async function authenticate({ username, password }) {
   const loginParams = {
@@ -9,7 +10,7 @@ export default async function authenticate({ username, password }) {
     "authenticate-verification": "ok",
   };
 
-  const loginUrl = "https://udk-berlin.asimut.net/public/login.php";
+  const loginUrl = `${BASE_URL}/public/login.php`;
   const result = await fetch(loginUrl, {
     method: "POST",
     headers: {

@@ -12,6 +12,9 @@ const eventTemplate = {
   action: "save",
 };
 
+const BASE_URL = process.env.ASIMUT_BASE_URL;
+const url = `${BASE_URL}/public/async-event.php`;
+
 export default async function bookRoom(booking) {
   const event = {
     ...eventTemplate,
@@ -21,7 +24,6 @@ export default async function bookRoom(booking) {
     endtime: booking.endtime,
   };
 
-  const url = "https://udk-berlin.asimut.net/public/async-event.php";
   const result = await fetch(url, {
     method: "POST",
     headers: {
