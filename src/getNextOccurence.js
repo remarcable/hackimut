@@ -1,5 +1,8 @@
 import { DateTime, Info } from "luxon";
 
+// TODO: take into account the current time. We might want to book a room for today
+// AND for the next week – this really depends on when we do the booking and our
+// quota/booking time framw
 export const getNextOccurence = ({ today = DateTime.now(), weekDay }) => {
   const weekDayToday = today.weekday - 1; // make it zero-based
   const weekDayNext = Info.weekdays().indexOf(weekDay);
