@@ -2,10 +2,17 @@
   "name": "hackimut",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "node-fetch": "^3.1.0"
+    "dotenv": "^10.0.0",
+    "fetch-cookie": "^1.0.0",
+    "node-fetch": "^3.1.0",
+    "node-fetch-with-proxy": "^0.1.6"
+  },
+  "devDependencies": {
+    "prettier": "^2.4.1"
   }
 }
