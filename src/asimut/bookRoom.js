@@ -74,7 +74,13 @@ async function canMakeBooking(booking) {
     return false;
   }
 
-  const nextOccurence = getNextOccurenceRaw({ weekDay: booking.weekDay });
+  const endTimeHour = +booking.endtime.split(":")[0];
+  const endTimeMinutes = +booking.endtime.split(":")[1];
+
+  const nextOccurence = getNextOccurenceRaw({ weekDay: booking.weekDay })
+    .set({ hour: endTimeHour, minute: endTimeMinutes })
+    .startOf("minute");
+
   const canBookUntilDate = DateTime.now().plus({
     days: CAN_BOOK_DAYS_INTO_FUTURE,
   });
