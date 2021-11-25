@@ -1,6 +1,8 @@
 import fetch from "../fetch.js";
-import { getNextOccurence } from "../getNextOccurence.js";
+import { getNextOccurence, getNextOccurenceRaw } from "../getNextOccurence.js";
 import config from "../../config.js";
+import { DateTime } from "luxon";
+import { getState, saveState } from "../state.js";
 
 const eventTemplate = {
   "event-id": "0",
@@ -15,6 +17,13 @@ const eventTemplate = {
 const BASE_URL = process.env.ASIMUT_BASE_URL;
 const url = `${BASE_URL}/public/async-event.php`;
 
+const CAN_BOOK_DAYS_INTO_FUTURE = 4;
+
+const bookingToKey = ({ roomName, weekDay, starttime, endtime }) =>
+  `${roomName}-${weekDay}-${getNextOccurence({
+    weekDay,
+  })}-${starttime}-${endtime}`;
+
 export default async function bookRoom(booking) {
   const event = {
     ...eventTemplate,
@@ -24,6 +33,30 @@ export default async function bookRoom(booking) {
     endtime: booking.endtime,
   };
 
+  const bookingKey = bookingToKey(booking);
+  const currentState = await getState();
+  const bookingAlreadyMade =
+    currentState.successfulBookings.includes(bookingKey);
+
+  if (bookingAlreadyMade) {
+    return {
+      skip: true,
+    };
+  }
+
+  const nextOccurence = getNextOccurenceRaw({ weekDay: booking.weekDay });
+  const canBookUntilDate = DateTime.now().plus({
+    days: CAN_BOOK_DAYS_INTO_FUTURE,
+  });
+  const bookingIsTooFarInTheFuture =
+    nextOccurence.diff(canBookUntilDate).valueOf() > 0;
+
+  if (bookingIsTooFarInTheFuture) {
+    return {
+      skip: true,
+    };
+  }
+
   const result = await fetch(url, {
     method: "POST",
     headers: {
@@ -32,5 +65,15 @@ export default async function bookRoom(booking) {
     body: new URLSearchParams(event),
   });
 
-  return result.json();
+  const resultJson = await result.json();
+
+  const successful = resultJson[0]?.class === "message-success";
+  if (successful) {
+    await saveState({
+      ...currentState,
+      successfulBookings: [...currentState.successfulBookings, bookingKey],
+    });
+  }
+
+  return resultJson;
 }

@@ -25,13 +25,20 @@ const makeTelegramMessage = (booking, result) => {
 const messages = await Promise.all(
   config.bookings.map(async (booking) => {
     const result = await bookRoom(booking);
+
+    if (result.skip) {
+      return null;
+    }
+
     return makeTelegramMessage(booking, result);
   })
 );
 
-await sendTelegramMessage(`Attempting to book your rooms 😏
-
-${messages.join("\n")}`);
+if (messages.filter((message) => !!message).length > 0) {
+  await sendTelegramMessage(`Attempting to book your rooms 😏
+  
+  ${messages.join("\n")}`);
+}
 
 // For the logs:
 console.log(`[${new Date().toLocaleString()}] Script ran successfully`);
