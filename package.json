@@ -5,10 +5,12 @@
   "type": "module",
   "scripts": {
     "start": "node -r dotenv/config src/index.js",
+    "getrooms": "node -r dotenv/config src/asimut/getRooms.js",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --watch",
     "lint": "eslint src"
   },
   "dependencies": {
+    "cheerio": "^1.0.0-rc.10",
     "dotenv": "^10.0.0",
     "fetch-cookie": "^1.0.0",
     "luxon": "^2.1.1",
