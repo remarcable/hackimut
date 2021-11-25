@@ -13,7 +13,7 @@ export async function saveState(state) {
 export async function getState() {
   const fileExists = fs.existsSync(PATH);
   if (!fileExists) {
-    return {};
+    return { successfulBookings: [] };
   }
 
   const { state } = JSON.parse(await fs.promises.readFile(PATH, "utf8"));

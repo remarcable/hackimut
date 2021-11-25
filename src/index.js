@@ -11,15 +11,17 @@ await authenticate({
 });
 
 const makeTelegramMessage = (booking, result) => {
-  const { roomName, weekDay, starttime, endtime } = booking;
+  const { weekDay, starttime, endtime } = booking;
+  const { room } = result;
   const nextOccurence = getNextOccurence({ weekDay });
 
-  const successful = result[0].class === "message-success";
-  const title = `*${roomName}* on *${weekDay}* (${nextOccurence} ${starttime}-${endtime})`;
-  const successMessage = `- ✅ I booked ${title} for you.`;
-  const errorMessage = `- ❌ I failed to book ${title} for you.`;
+  const title = `*${
+    room.title ?? "something"
+  }* on *${weekDay}* (${nextOccurence} ${starttime}-${endtime})`;
+  const successMessage = `- ✅ I've booked ${title} for you, sir!`;
+  const errorMessage = `- ❌ I attempted to book ${title} but failed :(`;
 
-  return successful ? successMessage : errorMessage;
+  return result.success ? successMessage : errorMessage;
 };
 
 const messages = await Promise.all(
@@ -35,9 +37,7 @@ const messages = await Promise.all(
 );
 
 if (messages.filter((message) => !!message).length > 0) {
-  await sendTelegramMessage(`Attempting to book your rooms 😏
-  
-  ${messages.join("\n")}`);
+  await sendTelegramMessage(messages.join("\n"));
 }
 
 // For the logs:
